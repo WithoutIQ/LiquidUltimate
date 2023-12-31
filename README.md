@@ -1,3 +1,8 @@
+# LiquidUltimate
+- Optimized Liquidbouce
+- Keep synced with LiquidBounce official
+- Add some interfaces and functions
+
 # LiquidBounce
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge, supporting version 1.8.9
 
