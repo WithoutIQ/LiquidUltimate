@@ -9,9 +9,11 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.event.EventManager.callEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
+import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.utils.CooldownHelper.getAttackCooldownProgress
 import net.ccbluex.liquidbounce.utils.CooldownHelper.resetLastAttackedTicks
 import net.ccbluex.liquidbounce.utils.EntityUtils.targetAnimals
@@ -107,6 +109,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     private val hurtTime by IntegerValue("HurtTime", 10, 0..10) { !simulateCooldown }
 
     private val clickOnly by BoolValue("ClickOnly", false)
+    private val exemptScaffold by BoolValue("ExemptScaffold", false)
 
     // Range
     // TODO: Make block range independent from attack range
@@ -269,7 +272,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     private val noInventoryAttack by BoolValue("NoInvAttack", false, subjective = true)
     private val noInventoryDelay by IntegerValue("NoInvDelay", 200, 0..500, subjective = true)
     { noInventoryAttack }
-    private val noConsumeAttack by ListValue("NoConsumeAttack",
+    private val noConsumeAttack by ListValue(
+        "NoConsumeAttack",
         arrayOf("Off", "NoHits", "NoRotation"),
         "Off",
         subjective = true
@@ -321,6 +325,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
      */
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if (exemptScaffold && ModuleManager[Scaffold::class.java].state) return
+
         if (event.eventState == EventState.POST) {
             update()
 
@@ -331,6 +337,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     }
 
     fun update() {
+        if (exemptScaffold && ModuleManager[Scaffold::class.java].state) return
+
         if (cancelRun || (noInventoryAttack && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelay))) return
 
         // Update target
@@ -345,6 +353,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (exemptScaffold && ModuleManager[Scaffold::class.java].state) return
+
         if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown) return
 
         if (blockStatus && autoBlock == "Packet" && releaseAutoBlock && !ignoreTickRule) {
@@ -403,6 +413,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
      */
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
+        if (exemptScaffold && ModuleManager[Scaffold::class.java].state) return
+
         if (cancelRun) {
             target = null
             currentTarget = null
@@ -650,7 +662,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
             // Critical Effect
             if (thePlayer.fallDistance > 0F && !thePlayer.onGround && !thePlayer.isOnLadder && !thePlayer.isInWater && !thePlayer.isPotionActive(
                     Potion.blindness
-                ) && !thePlayer.isRiding) {
+                ) && !thePlayer.isRiding
+            ) {
                 thePlayer.onCriticalHit(entity)
             }
 
@@ -671,14 +684,17 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
                     Potion.blindness
                 ) && thePlayer.ridingEntity == null || Criticals.handleEvents() && Criticals.msTimer.hasTimePassed(
                     Criticals.delay
-                ) && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb) {
+                ) && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb
+            ) {
                 thePlayer.onCriticalHit(entity)
             }
 
             // Enchant Effect
-            if (EnchantmentHelper.getModifierForCreature(thePlayer.heldItem,
+            if (EnchantmentHelper.getModifierForCreature(
+                    thePlayer.heldItem,
                     entity.creatureAttribute
-                ) > 0f || fakeSharp) {
+                ) > 0f || fakeSharp
+            ) {
                 thePlayer.onEnchantmentCritical(entity)
             }
         }
@@ -697,7 +713,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     private fun updateRotations(entity: Entity): Boolean {
         if (maxTurnSpeedValue.isMinimal()) return true
 
-        val entityPrediction = Vec3(entity.posX - entity.prevPosX,
+        val entityPrediction = Vec3(
+            entity.posX - entity.prevPosX,
             entity.posY - entity.prevPosY,
             entity.posZ - entity.prevPosZ
         ).times(1.5)
@@ -711,11 +728,11 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
         if (predict) {
             boundingBox = boundingBox.offset(
                 (entity.posX - entity.prevPosX - (mc.thePlayer.posX - mc.thePlayer.prevPosX))
-                    * nextFloat(minPredictSize, maxPredictSize),
+                        * nextFloat(minPredictSize, maxPredictSize),
                 (entity.posY - entity.prevPosY - (mc.thePlayer.posY - mc.thePlayer.prevPosY))
-                    * nextFloat(minPredictSize, maxPredictSize),
+                        * nextFloat(minPredictSize, maxPredictSize),
                 (entity.posZ - entity.prevPosZ - (mc.thePlayer.posZ - mc.thePlayer.prevPosZ))
-                    * nextFloat(minPredictSize, maxPredictSize)
+                        * nextFloat(minPredictSize, maxPredictSize)
             )
         }
 
@@ -818,13 +835,15 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
                 }
 
                 // Recreate raycast logic
-                val intercept = targetToCheck.hitBox.calculateIntercept(eyes,
+                val intercept = targetToCheck.hitBox.calculateIntercept(
+                    eyes,
                     eyes + getVectorForRotation(currentRotation) * range.toDouble()
                 )
 
                 if (intercept != null) {
                     // Is the entity box raycast vector visible? If not, check through-wall range
-                    hitable = isVisible(intercept.hitVec) || mc.thePlayer.getDistanceToEntityBox(targetToCheck) <= throughWallsRange
+                    hitable =
+                        isVisible(intercept.hitVec) || mc.thePlayer.getDistanceToEntityBox(targetToCheck) <= throughWallsRange
 
                     if (hitable) {
                         checkNormally = false
@@ -841,7 +860,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
         }
 
         // Recreate raycast logic
-        val intercept = targetToCheck.hitBox.calculateIntercept(eyes,
+        val intercept = targetToCheck.hitBox.calculateIntercept(
+            eyes,
             eyes + getVectorForRotation(currentRotation) * range.toDouble()
         )
 

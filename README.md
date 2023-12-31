@@ -2,6 +2,7 @@
 - Optimized Liquidbouce
 - Keep synced with LiquidBounce official
 - Add some interfaces and functions
+- this project wouldn't merge to official LiquidBounce, because it will change a lot of stuff and it will be hard to merge back to official LiquidBounce
 
 # LiquidBounce
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge, supporting version 1.8.9
