@@ -206,20 +206,23 @@ object RenderUtils : MinecraftInstance() {
     fun drawPlatform(entity: Entity, color: Color) {
         val renderManager = mc.renderManager
         val timer = mc.timer
-        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX
-        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY
-        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
+        val x =
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX
+        val y =
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY
+        val z =
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
         val axisAlignedBB = entity.entityBoundingBox
             .offset(-entity.posX, -entity.posY, -entity.posZ)
             .offset(x, y, z)
         drawAxisAlignedBB(
             AxisAlignedBB.fromBounds(
-                axisAlignedBB.minX,
-                axisAlignedBB.maxY + 0.2,
-                axisAlignedBB.minZ,
-                axisAlignedBB.maxX,
-                axisAlignedBB.maxY + 0.26,
-                axisAlignedBB.maxZ
+                axisAlignedBB.minX + 0.1,
+                axisAlignedBB.maxY - 0.4,
+                axisAlignedBB.minZ + 0.1,
+                axisAlignedBB.maxX - 0.1,
+                axisAlignedBB.maxY + 0.1,
+                axisAlignedBB.maxZ - 0.1
             ), color
         )
     }
@@ -506,10 +509,15 @@ object RenderUtils : MinecraftInstance() {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), zLevel.toDouble()).tex((textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), zLevel.toDouble()).tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), y.toDouble(), zLevel.toDouble()).tex(((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos(x.toDouble(), y.toDouble(), zLevel.toDouble()).tex((textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
+        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), zLevel.toDouble())
+            .tex((textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
+        worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), zLevel.toDouble())
+            .tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble())
+            .endVertex()
+        worldrenderer.pos((x + width).toDouble(), y.toDouble(), zLevel.toDouble())
+            .tex(((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
+        worldrenderer.pos(x.toDouble(), y.toDouble(), zLevel.toDouble())
+            .tex((textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
         tessellator.draw()
     }
 

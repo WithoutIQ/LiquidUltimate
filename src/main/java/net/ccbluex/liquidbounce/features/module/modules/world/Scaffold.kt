@@ -762,7 +762,7 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
 
             resetColor()
 
-            Fonts.font40.drawString(
+            mc.fontRendererObj.drawString(
                 info, width / 2, height / 2 + 7, Color.WHITE.rgb
             )
             glPopMatrix()
