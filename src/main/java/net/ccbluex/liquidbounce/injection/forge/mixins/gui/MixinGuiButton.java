@@ -89,10 +89,14 @@ public abstract class MixinGuiButton extends Gui {
             if (alpha <= 120) alpha = 120;
          }
 
-         Gui.drawRect(xPosition + (int) cut, yPosition,
-                 xPosition + width - (int) cut, yPosition + height,
+         Gui.drawRect(xPosition, yPosition,
+                 xPosition + width, yPosition + height,
                  enabled ? new Color(0F, 0F, 0F, alpha / 255F).getRGB() :
                          new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB());
+         Gui.drawRect(xPosition, yPosition,
+                 xPosition + width, yPosition + height,
+                 enabled ? new Color(0F, 0.2F, 1F, 0.5F).getRGB() :
+                         new Color(0.5F, 0.5F, 1F, 0.5F).getRGB());
 
          mc.getTextureManager().bindTexture(buttonTextures);
          mouseDragged(mc, mouseX, mouseY);
