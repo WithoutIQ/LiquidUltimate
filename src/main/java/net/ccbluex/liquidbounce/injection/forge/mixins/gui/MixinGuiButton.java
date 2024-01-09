@@ -93,9 +93,9 @@ public abstract class MixinGuiButton extends Gui {
                  xPosition + width, yPosition + height,
                  enabled ? new Color(0F, 0F, 0F, alpha / 255F).getRGB() :
                          new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB());
-         Gui.drawRect(xPosition, yPosition,
+         Gui.drawRect(xPosition, yPosition+height-1,
                  xPosition + width, yPosition + height,
-                 enabled ? new Color(0F, 0.2F, 1F, 0.5F).getRGB() :
+                 enabled ? new Color(0.1F, 0.3F, 1F, 0.5F).getRGB() :
                          new Color(0.5F, 0.5F, 1F, 0.5F).getRGB());
 
          mc.getTextureManager().bindTexture(buttonTextures);

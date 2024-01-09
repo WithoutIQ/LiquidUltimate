@@ -28,7 +28,7 @@ abstract class Shader : MinecraftInstance {
         val fragmentShaderID: Int
         
         try {
-            val vertexStream = javaClass.getResourceAsStream("/assets/minecraft/liquidbounce/shader/vertex.vert")
+            val vertexStream = javaClass.getResourceAsStream("/assets/minecraft/liquidultimate/shader/vertex.vert")
             vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB)
             IOUtils.closeQuietly(vertexStream)
             
@@ -62,7 +62,7 @@ abstract class Shader : MinecraftInstance {
         val vertexShaderID: Int
         val fragmentShaderID: Int
         
-        val vertexStream = javaClass.getResourceAsStream("/assets/minecraft/liquidbounce/shader/vertex.vert")
+        val vertexStream = javaClass.getResourceAsStream("/assets/minecraft/liquidultimate/shader/vertex.vert")
         vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB)
         IOUtils.closeQuietly(vertexStream)
         
