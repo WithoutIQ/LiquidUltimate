@@ -142,7 +142,7 @@ object LiquidBounce {
         if (hasForge()) {
             BlocksTab()
             ExploitsTab()
-            HeadsTab()
+//            HeadsTab()   //this is tooooo slow, so I comment it
         }
 
         // Disable optifine fastrender

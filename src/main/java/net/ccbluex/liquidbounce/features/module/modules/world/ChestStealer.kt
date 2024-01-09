@@ -133,7 +133,7 @@ object ChestStealer : Module("ChestStealer", ModuleCategory.WORLD) {
 
             val itemsToSteal = getItemsToSteal()
 
-            run scheduler@ {
+            run scheduler@{
                 itemsToSteal.forEachIndexed { index, (slot, stack, sortableTo) ->
                     // Wait for NoMove or cancel click
                     if (!shouldOperate()) {
@@ -243,7 +243,12 @@ object ChestStealer : Module("ChestStealer", ModuleCategory.WORLD) {
                         val hotbarStack = stacks.getOrNull(stacks.size - 9 + hotbarIndex)
 
                         // If occupied hotbar slot isn't already sorted or isn't strictly best, sort to it
-                        if (!canBeSortedTo(hotbarIndex, hotbarStack?.item) || !isStackUseful(hotbarStack, stacks, strictlyBest = true)) {
+                        if (!canBeSortedTo(hotbarIndex, hotbarStack?.item) || !isStackUseful(
+                                hotbarStack,
+                                stacks,
+                                strictlyBest = true
+                            )
+                        ) {
                             sortableTo = hotbarIndex
                             sortBlacklist[hotbarIndex] = true
                             break
@@ -285,13 +290,12 @@ object ChestStealer : Module("ChestStealer", ModuleCategory.WORLD) {
         val minX = scaledWidth * 0.3f
         val maxX = scaledWidth * 0.7f
         val minY = scaledHeight * 0.75f
-        val maxY = minY + 10f
+        val maxY = minY + 4f
 
         easingProgress += (progress - easingProgress) / 6f * event.partialTicks
 
-        drawRect(minX - 2, minY - 2, maxX + 2, maxY + 2, Color(200, 200, 200).rgb)
-        drawRect(minX, minY, maxX, maxY, Color(50, 50, 50).rgb)
-        drawRect(minX, minY, minX + (maxX - minX) * easingProgress, maxY, Color.HSBtoRGB(easingProgress / 5, 1f, 1f) or 0xFF0000)
+        drawRect(minX, minY, maxX, maxY, Color(50, 50, 50,100).rgb)
+        drawRect(minX, minY, minX + (maxX - minX) * easingProgress, maxY, Color(255, 255, 255, (progress * 255).toInt()))
     }
 
     @EventTarget
@@ -301,6 +305,7 @@ object ChestStealer : Module("ChestStealer", ModuleCategory.WORLD) {
                 receivedId = null
                 progress = null
             }
+
             is S30PacketWindowItems -> {
                 // Chests never have windowId 0
                 if (packet.func_148911_c() == 0)

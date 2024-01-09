@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.LiquidBounceStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.NullStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.SlowlyStyle
+import net.ccbluex.liquidbounce.ui.client.clickui.ClickUI
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -26,9 +27,9 @@ import java.awt.Color
 
 object ClickGUI : Module("ClickGUI", ModuleCategory.RENDER, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     private val style by
-        object : ListValue("Style", arrayOf("LiquidBounce", "Null", "Slowly", "Black"), "LiquidBounce") {
-            override fun onChanged(oldValue: String, newValue: String) = updateStyle()
-        }
+    object : ListValue("Style", arrayOf("LiquidBounce", "Null", "Slowly", "Black", "Modern"), "LiquidBounce") {
+        override fun onChanged(oldValue: String, newValue: String) = updateStyle()
+    }
     var scale by FloatValue("Scale", 0.8f, 0.5f..1.5f)
     val maxElements by IntegerValue("MaxElements", 15, 1..30)
     val fadeSpeed by FloatValue("FadeSpeed", 1f, 0.5f..4f)
@@ -37,17 +38,31 @@ object ClickGUI : Module("ClickGUI", ModuleCategory.RENDER, Keyboard.KEY_RSHIFT,
     val panelsForcedInBoundaries by BoolValue("PanelsForcedInBoundaries", true)
 
     private val colorRainbowValue = BoolValue("Rainbow", false) { style !in arrayOf("Slowly", "Black") }
-        private val colorRed by IntegerValue("R", 0, 0..255) { colorRainbowValue.isSupported() && !colorRainbowValue.get() }
-        private val colorGreen by IntegerValue("G", 160, 0..255) { colorRainbowValue.isSupported() && !colorRainbowValue.get() }
-        private val colorBlue by IntegerValue("B", 255, 0..255) { colorRainbowValue.isSupported() && !colorRainbowValue.get() }
+    private val colorRed by IntegerValue("R", 0, 0..255) { colorRainbowValue.isSupported() && !colorRainbowValue.get() }
+    private val colorGreen by IntegerValue(
+        "G",
+        160,
+        0..255
+    ) { colorRainbowValue.isSupported() && !colorRainbowValue.get() }
+    private val colorBlue by IntegerValue(
+        "B",
+        255,
+        0..255
+    ) { colorRainbowValue.isSupported() && !colorRainbowValue.get() }
 
     val guiColor
         get() = if (colorRainbowValue.get()) ColorUtils.rainbow().rgb
         else Color(colorRed, colorGreen, colorBlue).rgb
 
+    val modernUI: ClickUI = ClickUI()
+
     override fun onEnable() {
         updateStyle()
-        mc.displayGuiScreen(clickGui)
+        if (style == "Modern") {
+            mc.displayGuiScreen(modernUI)
+        } else {
+            mc.displayGuiScreen(clickGui)
+        }
     }
 
     private fun updateStyle() {

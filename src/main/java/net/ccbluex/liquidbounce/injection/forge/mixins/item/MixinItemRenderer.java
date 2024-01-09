@@ -96,7 +96,7 @@ public abstract class MixinItemRenderer {
         pushMatrix();
 
         if (itemToRender != null) {
-            boolean isForceBlocking = (itemToRender.getItem() instanceof ItemSword && KillAura.INSTANCE.getRenderBlocking()) || NoSlow.INSTANCE.isUNCPBlocking();
+            boolean isForceBlocking = (itemToRender.getItem() instanceof ItemSword && (KillAura.INSTANCE.getRenderBlocking() || (KillAura.INSTANCE.getVisualBlock() && KillAura.INSTANCE.getTarget() != null))) || NoSlow.INSTANCE.isUNCPBlocking();
 
             if (itemToRender.getItem() instanceof ItemMap) {
                 renderItemMap(abstractclientplayer, f2, f, f1);

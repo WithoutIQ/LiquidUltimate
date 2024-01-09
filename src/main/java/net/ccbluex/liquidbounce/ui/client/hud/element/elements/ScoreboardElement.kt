@@ -31,8 +31,10 @@ import java.awt.Color
  * Allows to move and customize minecraft scoreboard
  */
 @ElementInfo(name = "Scoreboard", force = true)
-class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
-                        side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)) : Element(x, y, scale, side) {
+class ScoreboardElement(
+    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
+) : Element(x, y, scale, side) {
 
     private val textRed by IntegerValue("Text-R", 255, 0..255)
     private val textGreen by IntegerValue("Text-G", 255, 0..255)
@@ -44,13 +46,14 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     private val backgroundColorAlpha by IntegerValue("Background-Alpha", 95, 0..255)
 
     private val rect by BoolValue("Rect", false)
-        private val rectColorMode by ListValue("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
-            private val rectColorRed by IntegerValue("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom"}
-            private val rectColorGreen by IntegerValue("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom"}
-            private val rectColorBlue by IntegerValue("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom"}
-            private val rectColorAlpha by IntegerValue("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorMode by ListValue("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
+    private val rectColorRed by IntegerValue("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom" }
+    private val rectColorGreen by IntegerValue("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom" }
+    private val rectColorBlue by IntegerValue("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom" }
+    private val rectColorAlpha by IntegerValue("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom" }
 
     private val shadow by BoolValue("Shadow", false)
+    private val showScore by BoolValue("Score", false)
     private val font by FontValue("Font", Fonts.minecraftFont)
 
     /**
@@ -93,7 +96,18 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
         for (score in scoreCollection) {
             val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
-            val width = "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
+            var width = ScorePlayerTeam.formatPlayerName(
+                scorePlayerTeam,
+                score.playerName
+            )
+            if (showScore) {
+                width = "${
+                    ScorePlayerTeam.formatPlayerName(
+                        scorePlayerTeam,
+                        score.playerName
+                    )
+                }: ${EnumChatFormatting.RED}${score.scorePoints}"
+            }
             maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
         }
 
@@ -114,8 +128,15 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             glColor4f(1f, 1f, 1f, 1f)
 
             fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadow)
-            fontRenderer.drawString(scorePoints, (width - fontRenderer.getStringWidth(scorePoints)).toFloat(), height, textColor, shadow)
-
+            if (showScore) {
+                fontRenderer.drawString(
+                    scorePoints,
+                    (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                    height,
+                    textColor,
+                    shadow
+                )
+            }
             if (index == scoreCollection.size - 1) {
                 val displayName = objective.displayName
 
@@ -149,8 +170,10 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
         return Border(-maxWidth - 5f - if (rect) 3 else 0, -2F, 5F, maxHeight + fontRenderer.FONT_HEIGHT.toFloat())
     }
 
-    private fun backgroundColor() = Color(backgroundColorRed, backgroundColorGreen,
-            backgroundColorBlue, backgroundColorAlpha)
+    private fun backgroundColor() = Color(
+        backgroundColorRed, backgroundColorGreen,
+        backgroundColorBlue, backgroundColorAlpha
+    )
 
     private fun textColor() = Color(textRed, textGreen, textBlue)
 

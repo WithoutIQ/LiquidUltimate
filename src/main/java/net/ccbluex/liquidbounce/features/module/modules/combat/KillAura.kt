@@ -9,9 +9,11 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.event.EventManager.callEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
+import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.CooldownHelper.getAttackCooldownProgress
 import net.ccbluex.liquidbounce.utils.CooldownHelper.resetLastAttackedTicks
@@ -251,6 +253,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxPredictSize)
         override fun isSupported() = predictValue.isActive() && !maxPredictSizeValue.isMinimal()
     }
+    val visualBlock by BoolValue("VisualBlock", true)
 
     // Bypass
     private val failSwing by BoolValue("FailSwing", true) { swing }
@@ -267,6 +270,9 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     // Visuals
     private val mark by BoolValue("Mark", true, subjective = true)
     private val fakeSharp by BoolValue("FakeSharp", true, subjective = true)
+
+    private val exemptScaffold by BoolValue("ExemptScaffold", true)
+
 
     /**
      * MODULE
@@ -312,6 +318,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
      */
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if (exemptScaffold && ModuleManager[Scaffold::class.java].state) return
+
         if (event.eventState == EventState.POST) {
             update()
 
@@ -322,6 +330,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
     }
 
     fun update() {
+        if (exemptScaffold && ModuleManager[Scaffold::class.java].state) return
+
         if (cancelRun || (noInventoryAttack && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelay))) return
 
         // Update target
@@ -341,6 +351,8 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
      */
     @EventTarget
     fun onTick(event: TickEvent) {
+        if (exemptScaffold && ModuleManager[Scaffold::class.java].state) return
+
         // Just in case world event doesn't get called
         if (mc.thePlayer.ticksExisted in 0..1 && attackTickTimes.isNotEmpty()) {
             attackTickTimes.clear()
@@ -489,7 +501,7 @@ object KillAura : Module("KillAura", ModuleCategory.COMBAT, Keyboard.KEY_R) {
                     if (clicks == 1) {
                         // We return false because when you click literally once, the attack key's [pressed] status is false.
                         // Since we simulate clicks, we are supposed to respect that behavior.
-                        mc.sendClickBlockToController(false)
+//                        mc.sendClickBlockToController(false)
                     }
                 }
             }
