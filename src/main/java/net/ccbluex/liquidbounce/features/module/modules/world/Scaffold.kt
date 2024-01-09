@@ -757,18 +757,8 @@ object Scaffold : Module("Scaffold", ModuleCategory.WORLD, Keyboard.KEY_I) {
                 0f
             )
 
-            val info = "Blocks: §7$blocksAmount"
+            val info = "Blocks §4$blocksAmount"
             val (width, height) = ScaledResolution(mc)
-
-            drawBorderedRect(
-                width / 2 - 2,
-                height / 2 + 5,
-                width / 2 + Fonts.font40.getStringWidth(info) + 2,
-                height / 2 + 16,
-                3,
-                Color.BLACK.rgb,
-                Color.BLACK.rgb
-            )
 
             resetColor()
 
