@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Arraylist
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.animation.Animation
 import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.TickScheduler
@@ -37,6 +38,7 @@ open class Module @JvmOverloads constructor(
     val spacedName: String = name.split("(?<=[a-z])(?=[A-Z])".toRegex()).joinToString(separator = " "),
     val subjective: Boolean = category == ModuleCategory.RENDER,
     val gameDetecting: Boolean = canBeEnabled
+
 
 ) : MinecraftInstance(), Listenable {
 
@@ -68,6 +70,10 @@ open class Module @JvmOverloads constructor(
         get() = forcedDescription ?: translation("module.${name.toLowerCamelCase()}.description")
 
     var slideStep = 0F
+
+    // animation
+    var xAnim = 0f
+    var yAnim = 0f
 
     // Current state of module
     var state = false

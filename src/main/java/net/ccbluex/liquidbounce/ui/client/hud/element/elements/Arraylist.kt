@@ -152,12 +152,14 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
             // If modules become inactive because they only work when in game, animate them as if they got disabled
             if (shouldShow) {
                 if (module.slide < width) {
-                    module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
-                    module.slideStep += delta / 4F
+                    module.slide = width.toFloat()
+//                    module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+//                    module.slideStep += delta / 4F
                 }
             } else {
-                module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
-                module.slideStep -= delta / 4F
+                module.slide = (-width).toFloat()
+//                module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+//                module.slideStep -= delta / 4F
             }
 
             module.slide = module.slide.coerceIn(0F, width.toFloat())
@@ -188,9 +190,15 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
             when (side.horizontal) {
                 Horizontal.RIGHT, Horizontal.MIDDLE -> {
                     val xPos = -module.slide - 2
+                    module.xAnim =
+                        net.ccbluex.liquidbounce.utils.animation.AnimationUtils.base(module.xAnim.toDouble(),
+                            xPos.toDouble(), 0.3).toFloat()
+                    module.yAnim =
+                        net.ccbluex.liquidbounce.utils.animation.AnimationUtils.base(module.yAnim.toDouble(),
+                            yPos.toDouble(), 0.3).toFloat()
 
                     RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                        drawRect(xPos - if (rectMode == "Right") 5 else 2, yPos, if (rectMode == "Right") -3F else 0F, yPos + textHeight,
+                        drawRect(module.xAnim - if (rectMode == "Right") 5 else 2, module.yAnim, if (rectMode == "Right") -3F else 0F, module.yAnim + textHeight,
                             when (backgroundMode) {
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
@@ -200,7 +208,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                     }
 
                     RainbowFontShader.begin(!markAsInactive && textColorMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                        font.drawString(displayString, xPos - if (rectMode == "Right") 3 else 0, yPos + textY,
+                        font.drawString(displayString, module.xAnim - if (rectMode == "Right") 3 else 0, module.yAnim + textY,
                             if (markAsInactive) inactiveColor
                             else when (textColorMode) {
                                 "Rainbow" -> 0
@@ -222,8 +230,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 }
 
                             when (rectMode) {
-                                "Left" -> drawRect(xPos - 5, yPos, xPos - 2, yPos + textHeight, rectColor)
-                                "Right" -> drawRect(-3F, yPos, 0F, yPos + textHeight, rectColor)
+                                "Left" -> drawRect(module.xAnim - 5, module.yAnim, module.xAnim - 2, module.yAnim + textHeight, rectColor)
+                                "Right" -> drawRect(-3F, module.yAnim, 0F, module.yAnim + textHeight, rectColor)
                             }
                         }
                     }
@@ -233,8 +241,15 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                     val width = font.getStringWidth(displayString)
                     val xPos = -(width - module.slide) + if (rectMode == "Left") 5 else 2
 
+                    module.xAnim =
+                        net.ccbluex.liquidbounce.utils.animation.AnimationUtils.base(module.xAnim.toDouble(),
+                            xPos.toDouble(), 0.3).toFloat()
+                    module.yAnim =
+                        net.ccbluex.liquidbounce.utils.animation.AnimationUtils.base(module.yAnim.toDouble(),
+                            yPos.toDouble(), 0.3).toFloat()
+
                     RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                        drawRect(0F, yPos, xPos + width + if (rectMode == "Right") 5 else 2, yPos + textHeight,
+                        drawRect(0F, module.yAnim, module.xAnim + width + if (rectMode == "Right") 5 else 2, module.yAnim + textHeight,
                             when (backgroundMode) {
                                 "Rainbow" -> 0
                                 "Random" -> moduleColor
@@ -244,7 +259,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                     }
 
                     RainbowFontShader.begin(!markAsInactive && textColorMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                        font.drawString(displayString, xPos, yPos + textY,
+                        font.drawString(displayString, module.xAnim, module.yAnim + textY,
                             if (markAsInactive) inactiveColor
                             else when (textColorMode) {
                                 "Rainbow" -> 0
@@ -266,8 +281,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                 }
 
                             when (rectMode) {
-                                "Left" -> drawRect(0F, yPos - 1, 3F, yPos + textHeight, rectColor)
-                                "Right" -> drawRect(xPos + width + 2, yPos, xPos + width + 2 + 3, yPos + textHeight, rectColor)
+                                "Left" -> drawRect(0F, module.yAnim - 1, 3F, module.yAnim + textHeight, rectColor)
+                                "Right" -> drawRect(module.xAnim + width + 2, module.yAnim, module.xAnim + width + 2 + 3, yPos + textHeight, rectColor)
                             }
                         }
                     }
